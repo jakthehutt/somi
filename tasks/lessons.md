@@ -7,6 +7,12 @@ Read this at the start of every session before writing any code.
 ### Vite scaffold in non-empty directory
 `npm create vite@latest .` cancels if the target directory is non-empty (even if it only contains `.git`). Workaround: scaffold to a temp directory (`/tmp/<name>`), then `cp -r /tmp/<name>/. .`.
 
+### Supabase migration role cannot ALTER DATABASE
+The role used by `supabase db push` cannot run `ALTER DATABASE postgres SET "app.xxx"`. Solution: hardcode non-secret config directly in the trigger function body (function URL + public anon JWT). Never use `ALTER DATABASE` for app config in Supabase cloud migrations.
+
+### Supabase secrets set rejects SUPABASE_ prefix
+`supabase secrets set SUPABASE_SERVICE_ROLE_KEY=...` is rejected — the `SUPABASE_` prefix is reserved. Edge functions receive `SUPABASE_SERVICE_ROLE_KEY` automatically as a built-in env var; never set it manually.
+
 ### Vitest env loading with spaces around `=` in .env
 Vitest's built-in env loading (and `dotenv.config()`) can silently drop vars if the `.env` file has `KEY = VALUE` (spaces). Fix: use `loadEnv` from `vite` in `vitest.config.ts` with an empty prefix (`''`) to load ALL vars, then spread them into `test.env`. Use `import.meta.env` (not `process.env`) in tests — Vitest populates this from `test.env`.
 
