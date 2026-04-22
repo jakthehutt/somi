@@ -79,3 +79,18 @@ See `tasks/plan.md` for build status. Environment variables are documented in `.
 npm install
 npm run dev
 ```
+
+## Git Remotes
+
+This repo is mirrored to two remotes. Every push must go to both:
+
+```bash
+git push origin main && git push lovable main
+```
+
+| Remote | URL | Purpose |
+|--------|-----|---------|
+| `origin` | https://github.com/jakthehutt/somi | Main repo |
+| `lovable` | https://github.com/jakthehutt/git-connect.git | Lovable sync |
+
+Note: Lovable may push directly to `git-connect` when you edit in its editor. Pull from there before pushing if you've been using the Lovable UI: `git pull lovable main`.

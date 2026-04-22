@@ -34,3 +34,14 @@ If current task indicates prior knowledge and context read this file `repostory-
   - Example: `feat: add KAN layer forward pass — needed to validate B-spline basis output`
 - Include keywords: what changed, why it changed
 - Never leave uncommitted work at the end of a response
+
+## 5. Push to Both Remotes
+
+This repo has two remotes that must stay in sync:
+- `origin` → `https://github.com/jakthehutt/somi` (main repo)
+- `lovable` → `https://github.com/jakthehutt/git-connect.git` (Lovable sync)
+
+**Every push must go to both:**
+```bash
+git push origin main && git push lovable main
+```
