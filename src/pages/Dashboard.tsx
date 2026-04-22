@@ -4,6 +4,7 @@ import { useLockState }       from '../hooks/useLockState'
 import { useUnlockRequests }  from '../hooks/useUnlockRequests'
 import { useAuth }            from '../hooks/useAuth'
 import AddDomainForm          from '../components/AddDomainForm'
+import LockControls           from '../components/LockControls'
 import RequestRemovalModal    from '../components/RequestRemovalModal'
 import { formatCountdown, executionTime } from '../lib/countdown'
 import type { BlocklistEntry } from '../lib/types'
@@ -78,7 +79,13 @@ export default function Dashboard() {
               <p className="text-xs text-gray-400 mt-1">Cooling-off: {lockState.cooling_off_hours}h</p>
             </div>
           ) : (
-            <p className="text-sm text-gray-400">No lock set</p>
+            <p className="text-sm text-gray-400 mb-4">No lock set</p>
+          )}
+
+          {lockState && (
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <LockControls lockState={lockState} />
+            </div>
           )}
         </section>
 
