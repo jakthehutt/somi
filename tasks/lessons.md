@@ -7,6 +7,9 @@ Read this at the start of every session before writing any code.
 ### Vite scaffold in non-empty directory
 `npm create vite@latest .` cancels if the target directory is non-empty (even if it only contains `.git`). Workaround: scaffold to a temp directory (`/tmp/<name>`), then `cp -r /tmp/<name>/. .`.
 
+### Magic link sign-up does not pass user_metadata role
+`signInWithOtp` does not pass `user_metadata`, so the `handle_new_user` trigger finds no role and skips profile creation. Result: user hits "Unauthorized" after clicking the magic link. Fix for existing users: insert profile manually via service role. Fix for new invites: use `supabase.auth.admin.inviteUserByEmail({ email, options: { data: { role } } })` from the backend instead of letting users self-sign-up. Implemented in Step 6 setup notes.
+
 ### Supabase migration role cannot ALTER DATABASE
 The role used by `supabase db push` cannot run `ALTER DATABASE postgres SET "app.xxx"`. Solution: hardcode non-secret config directly in the trigger function body (function URL + public anon JWT). Never use `ALTER DATABASE` for app config in Supabase cloud migrations.
 
