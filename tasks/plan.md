@@ -3,7 +3,7 @@
 Track one commit per numbered step. Check off as completed.
 
 - [x] **Step 1** — Repo + scaffolding: Vite + React + TS + Tailwind, README, tasks files
-- [ ] **Step 2** — Supabase schema: migrations for profiles, blocklist, lock_state, unlock_requests, audit_log with RLS
+- [x] **Step 2** — Supabase schema: migrations for profiles, blocklist, lock_state, unlock_requests, audit_log with RLS
 - [ ] **Step 3** — Schema test fixtures: `supabase/tests/rls.sql` exercising RLS as different roles
 - [ ] **Step 4** — NextDNS API client: `src/lib/nextdns.ts` with add/remove/list, Vitest tests
 - [ ] **Step 5** — Sync edge function: `supabase/functions/sync-nextdns/index.ts`, triggered on blocklist changes
