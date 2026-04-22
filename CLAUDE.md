@@ -35,7 +35,22 @@ If current task indicates prior knowledge and context read this file `repostory-
 - Include keywords: what changed, why it changed
 - Never leave uncommitted work at the end of a response
 
-## 5. Push to Both Remotes
+## 5. Update LOG.md After Every Response
+
+At the end of every response, append a new entry to `LOG.md` under the current date with:
+- **What:** one or two sentences on what changed or was fixed
+- **Why:** the reason — bug, user request, requirement, etc.
+
+Format:
+```
+### <short title>
+- **What:** ...
+- **Why:** ...
+```
+
+Never skip this step, even for small or partial changes.
+
+## 6. Push to Both Remotes
 
 This repo has two remotes that must stay in sync:
 - `origin` → `https://github.com/jakthehutt/somi` (main repo)
