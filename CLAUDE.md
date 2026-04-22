@@ -60,7 +60,7 @@ If current task indicates prior knowledge and context read this file `repostory-
 
 ## 5. Update LOG.md After Every Response
 
-At the end of every response, append a new entry to `LOG.md` under the current date with:
+At the end of every response, append a new entry to `tasks/LOG.md` under the current date with:
 - **What:** one or two sentences on what changed or was fixed
 - **Why:** the reason — bug, user request, requirement, etc.
 
