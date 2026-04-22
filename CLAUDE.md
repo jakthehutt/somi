@@ -23,6 +23,29 @@
 - If no test framework exists yet, set one up as the very first step
 - A feature is not done until it has a passing test
 
+### Test Coverage Requirements
+
+Every piece of functionality must have a corresponding test. No exceptions.
+
+**What must be tested:**
+- Every Supabase connection (auth, database reads/writes, realtime)
+- Every RLS policy — run as each role (`owner`, `friend`, anonymous) and assert allow/deny
+- Every edge function — test the HTTP interface with mocked and real payloads
+- Every NextDNS API client function (`addDenylistDomain`, `removeDenylistDomain`, `listDenylist`)
+- Every lock rule — adding blocks, requesting removal, approving, cooling-off, execution
+- Every UI mutation — form submissions, button clicks that trigger database writes
+
+**Test locations:**
+- `test/` — Vitest unit + integration tests (TypeScript)
+- `supabase/tests/` — SQL tests for RLS policies (run via psql against the linked project)
+- Edge function tests live alongside the function in `supabase/functions/<name>/`
+
+**Rules:**
+- A connection is not trusted until a test proves it works
+- An RLS policy is not trusted until a test proves it blocks what it should block
+- Never skip RLS tests because "they're tedious" — they are the security boundary
+- If a test is hard to write, that is a signal the code needs to be simpler
+
 ## Use Repository Context
 If current task indicates prior knowledge and context read this file `repostory-info.md` to fetch infor about goal, structure and context of the project.
 
