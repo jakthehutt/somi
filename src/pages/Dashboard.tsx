@@ -2,6 +2,7 @@ import { useBlocklist }       from '../hooks/useBlocklist'
 import { useLockState }       from '../hooks/useLockState'
 import { useUnlockRequests }  from '../hooks/useUnlockRequests'
 import { useAuth }            from '../hooks/useAuth'
+import AddDomainForm          from '../components/AddDomainForm'
 import type { BlocklistEntry, UnlockRequest } from '../lib/types'
 
 function formatDate(iso: string) {
@@ -96,6 +97,13 @@ export default function Dashboard() {
             )}
           </section>
         )}
+
+        {/* Blocklist */}
+        {/* Add domain */}
+        <section className="bg-white rounded-xl border border-gray-200 p-6">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Block a domain</h2>
+          <AddDomainForm />
+        </section>
 
         {/* Blocklist */}
         <section className="bg-white rounded-xl border border-gray-200 p-6">
