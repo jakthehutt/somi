@@ -19,7 +19,15 @@ export default function RequireRole({ role, children }: Props) {
   }
 
   if (!user) return <Navigate to="/login" replace />
-  if (profile?.role !== role) return <Navigate to="/unauthorized" replace />
+
+  // If they're logged in but wrong role, route them to their home — not unauthorized
+  if (profile?.role && profile.role !== role) {
+    const destination = profile.role === 'owner' ? '/' : '/friend'
+    return <Navigate to={destination} replace />
+  }
+
+  // Profile hasn't loaded yet but user is authenticated → show loading rather than deny
+  if (!profile) return <Navigate to="/unauthorized" replace />
 
   return <>{children}</>
 }

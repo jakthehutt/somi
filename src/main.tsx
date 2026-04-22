@@ -5,10 +5,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './index.css'
 import { missingEnvVars } from './lib/supabase'
 
-import Login        from './pages/Login'
-import Dashboard    from './pages/Dashboard'
-import Unauthorized from './pages/Unauthorized'
-import RequireRole  from './components/RequireRole'
+import Login           from './pages/Login'
+import Dashboard       from './pages/Dashboard'
+import FriendDashboard from './pages/FriendDashboard'
+import Unauthorized    from './pages/Unauthorized'
+import RequireRole     from './components/RequireRole'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000 } },
@@ -40,6 +41,11 @@ createRoot(document.getElementById('root')!).render(
           <Routes>
             <Route path="/login"        element={<Login />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/friend" element={
+              <RequireRole role="friend">
+                <FriendDashboard />
+              </RequireRole>
+            } />
             <Route path="/" element={
               <RequireRole role="owner">
                 <Dashboard />
