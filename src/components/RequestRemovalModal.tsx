@@ -35,46 +35,59 @@ export default function RequestRemovalModal({ entry, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 flex items-center justify-center px-lg z-50"
+      style={{ backgroundColor: 'oklch(0.22 0.012 60 / 0.6)' }}
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="removal-title"
     >
       <div
-        className="bg-white rounded-xl border border-gray-200 max-w-md w-full p-6"
+        className="bg-paper-raised border border-rule max-w-md w-full p-xl"
         onClick={e => e.stopPropagation()}
       >
-        <h2 className="text-lg font-semibold text-gray-900 mb-1">Request removal</h2>
-        <p className="text-sm text-gray-500 mb-4">
+        <h2
+          id="removal-title"
+          className="text-h2 font-display text-ink mb-sm"
+          style={{ letterSpacing: '-0.015em' }}
+        >
+          Request removal
+        </h2>
+        <p className="text-body text-ink-muted mb-lg" style={{ maxWidth: '48ch' }}>
           Asking your friend to approve unblocking{' '}
-          <span className="font-mono text-gray-800">{entry.domain}</span>.
-          They will see this request and can approve or deny.
-          If approved, the block is removed after the cooling-off delay.
+          <span className="font-mono text-ink">{entry.domain}</span>. If approved, the block is removed after the cooling-off delay.
         </p>
 
-        <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
-          Reason (optional)
+        <label className="flex flex-col gap-2xs mb-md">
+          <span
+            className="text-micro text-ink-muted uppercase"
+            style={{ letterSpacing: '0.12em' }}
+          >
+            Reason (optional)
+          </span>
+          <textarea
+            rows={3}
+            placeholder="Why do you need this unblocked?"
+            value={reason}
+            onChange={e => setReason(e.target.value)}
+            className="bg-transparent border border-rule focus:border-ink focus:outline-none px-sm py-xs text-body text-ink placeholder:text-ink-faint resize-none transition-colors"
+          />
         </label>
-        <textarea
-          rows={3}
-          placeholder="Why do you need this unblocked?"
-          value={reason}
-          onChange={e => setReason(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
-        />
 
-        {error && <p className="text-red-600 text-xs mt-2">{error}</p>}
+        {error && <p className="text-small text-oxblood mb-sm" role="alert">{error}</p>}
 
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="flex justify-end gap-sm">
           <button
             onClick={onClose}
             disabled={mutation.isPending}
-            className="text-sm text-gray-500 hover:text-gray-900 px-3 py-1.5 transition-colors"
+            className="text-small text-ink-muted hover:text-ink px-sm py-xs transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
-            className="bg-gray-900 text-white rounded-lg px-4 py-1.5 text-sm font-medium hover:bg-gray-700 disabled:opacity-50 transition-colors"
+            className="bg-oxblood text-paper hover:bg-oxblood-hover disabled:opacity-50 px-md py-xs text-small font-medium transition-colors"
           >
             {mutation.isPending ? 'Submitting…' : 'Submit request'}
           </button>

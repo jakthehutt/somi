@@ -12,8 +12,8 @@ export default function RequireRole({ role, children }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-sm text-gray-400">Loading…</p>
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <p className="text-small text-ink-faint">Loading…</p>
       </div>
     )
   }

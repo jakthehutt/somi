@@ -16,27 +16,47 @@ function formatDate(iso: string) {
   })
 }
 
-function statusBadge(status: BlocklistEntry['status']) {
-  const map = {
-    active:          'bg-red-100 text-red-700',
-    pending_removal: 'bg-yellow-100 text-yellow-700',
-    removed:         'bg-green-100 text-green-700',
-  }
-  const label = { active: 'Blocked', pending_removal: 'Pending removal', removed: 'Removed' }
+function StatusBadge({ status }: { status: BlocklistEntry['status'] }) {
+  const styles = {
+    active:          'bg-oxblood-tint text-oxblood',
+    pending_removal: 'bg-amber-tint text-amber',
+    removed:         'bg-sage-tint text-sage',
+  }[status]
+  const label = { active: 'Blocked', pending_removal: 'Pending', removed: 'Removed' }[status]
   return (
-    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${map[status]}`}>
-      {label[status]}
+    <span
+      className={`${styles} text-micro font-medium px-xs py-2xs tracking-wide`}
+      style={{ letterSpacing: '0.06em' }}
+    >
+      {label}
     </span>
   )
 }
 
-// Re-render every 30s so the countdown ticks without a refetch
+// Re-render every 30s so countdowns tick without refetching.
 function useTick(intervalMs = 30_000) {
   const [, setTick] = useState(0)
   useEffect(() => {
     const id = setInterval(() => setTick(t => t + 1), intervalMs)
     return () => clearInterval(id)
   }, [intervalMs])
+}
+
+function SectionLabel({ children, accent }: { children: React.ReactNode; accent?: 'ink' | 'oxblood' | 'amber' | 'sage' }) {
+  const color = {
+    ink: 'text-ink-muted',
+    oxblood: 'text-oxblood',
+    amber: 'text-amber',
+    sage: 'text-sage',
+  }[accent ?? 'ink']
+  return (
+    <h2
+      className={`${color} text-micro font-body font-semibold uppercase mb-md`}
+      style={{ letterSpacing: '0.12em' }}
+    >
+      {children}
+    </h2>
+  )
 }
 
 export default function Dashboard() {
@@ -53,117 +73,138 @@ export default function Dashboard() {
   const targetedIds = new Set(activeReq.map(r => r.target_blocklist_id).filter(Boolean) as string[])
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">blockd</h1>
-        <div className="flex items-center gap-4">
-          <Link to="/log" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-            Audit log
-          </Link>
-          <span className="text-sm text-gray-500">{profile?.email}</span>
-          <button onClick={signOut} className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+    <div className="min-h-screen bg-paper">
+      <header className="border-b border-rule px-lg py-md flex items-center justify-between">
+        <h1 className="text-h3 font-display text-ink" style={{ letterSpacing: '-0.015em' }}>
+          sovereign mind
+        </h1>
+        <nav className="flex items-center gap-lg text-small text-ink-muted">
+          <Link to="/log" className="hover:text-ink transition-colors">Audit log</Link>
+          <span className="text-ink-faint">{profile?.email}</span>
+          <button onClick={signOut} className="hover:text-ink transition-colors">
             Sign out
           </button>
-        </div>
+        </nav>
       </header>
 
-      <main className="max-w-2xl mx-auto px-6 py-8 flex flex-col gap-6">
+      <main className="max-w-2xl mx-auto px-lg pt-2xl pb-3xl">
 
-        {/* Lock state */}
-        <section className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Lock state</h2>
+        {/* Lock state — the room's centerpiece. */}
+        <section className="pb-xl">
+          <SectionLabel>Lock state</SectionLabel>
           {lsLoading ? (
-            <p className="text-sm text-gray-400">Loading…</p>
+            <p className="text-body text-ink-faint">Loading…</p>
           ) : lockState?.locked_until ? (
-            <div>
-              <p className="text-gray-700 text-sm">
-                Locked until <strong>{formatDate(lockState.locked_until)}</strong>{' '}
-                ({formatCountdown(lockState.locked_until)} remaining)
+            <div className="flex flex-col gap-2xs">
+              <p className="text-h3 font-display text-ink">
+                Locked until <span className="text-oxblood">{formatDate(lockState.locked_until)}</span>
               </p>
-              <p className="text-xs text-gray-400 mt-1">Cooling-off: {lockState.cooling_off_hours}h</p>
+              <p className="text-small text-ink-muted">
+                {formatCountdown(lockState.locked_until)} remaining · cooling-off {lockState.cooling_off_hours}h
+              </p>
             </div>
           ) : (
-            <p className="text-sm text-gray-400 mb-4">No lock set</p>
+            <p className="text-body text-ink-faint">No lock set.</p>
           )}
-
           {lockState && (
-            <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="mt-lg">
               <LockControls lockState={lockState} />
             </div>
           )}
         </section>
 
-        {/* Approved, waiting for cooling-off */}
+        {/* Approved, counting down. */}
         {approved.length > 0 && lockState && (
-          <section className="bg-white rounded-xl border border-green-200 p-6">
-            <h2 className="text-sm font-semibold text-green-700 uppercase tracking-wide mb-3">
-              Approved — unblocking soon ({approved.length})
-            </h2>
-            {approved.map(r => {
-              const entry = blocklist.find(b => b.id === r.target_blocklist_id)
-              const execAt = executionTime(r.approved_at!, lockState.cooling_off_hours)
-              return (
-                <div key={r.id} className="flex items-center justify-between text-sm py-2 border-b border-gray-100 last:border-0">
-                  <span className="text-gray-700 font-mono">{entry?.domain ?? 'lock change'}</span>
-                  <span className="text-green-600 text-xs">unblocks in {formatCountdown(execAt)}</span>
-                </div>
-              )
-            })}
+          <section className="border-t border-rule pt-xl pb-xl">
+            <SectionLabel accent="sage">Approved — unblocking soon</SectionLabel>
+            <ul className="flex flex-col">
+              {approved.map(r => {
+                const entry = blocklist.find(b => b.id === r.target_blocklist_id)
+                const execAt = executionTime(r.approved_at!, lockState.cooling_off_hours)
+                return (
+                  <li
+                    key={r.id}
+                    className="flex items-baseline justify-between py-sm border-b border-rule last:border-0 gap-md"
+                  >
+                    <span className="text-body font-mono text-ink truncate">
+                      {entry?.domain ?? 'lock change'}
+                    </span>
+                    <span className="text-small text-sage shrink-0">
+                      unblocks in {formatCountdown(execAt)}
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
           </section>
         )}
 
-        {/* Pending friend's review */}
+        {/* Pending friend's call. */}
         {pending.length > 0 && (
-          <section className="bg-white rounded-xl border border-yellow-200 p-6">
-            <h2 className="text-sm font-semibold text-yellow-700 uppercase tracking-wide mb-3">
-              Pending friend approval ({pending.length})
-            </h2>
+          <section className="border-t border-rule pt-xl pb-xl">
+            <SectionLabel accent="amber">Pending friend approval</SectionLabel>
             {rqLoading ? (
-              <p className="text-sm text-gray-400">Loading…</p>
+              <p className="text-body text-ink-faint">Loading…</p>
             ) : (
-              pending.map(r => {
-                const entry = blocklist.find(b => b.id === r.target_blocklist_id)
-                return (
-                  <div key={r.id} className="flex items-center justify-between text-sm py-2 border-b border-gray-100 last:border-0">
-                    <div>
-                      <span className="text-gray-700 font-mono">{entry?.domain ?? 'lock change'}</span>
-                      {r.reason && <p className="text-xs text-gray-400 mt-0.5 italic">"{r.reason}"</p>}
-                    </div>
-                    <span className="text-yellow-600 text-xs">awaiting friend</span>
-                  </div>
-                )
-              })
+              <ul className="flex flex-col">
+                {pending.map(r => {
+                  const entry = blocklist.find(b => b.id === r.target_blocklist_id)
+                  return (
+                    <li
+                      key={r.id}
+                      className="flex items-baseline justify-between py-sm border-b border-rule last:border-0 gap-md"
+                    >
+                      <div className="flex flex-col gap-2xs min-w-0">
+                        <span className="text-body font-mono text-ink truncate">
+                          {entry?.domain ?? 'lock change'}
+                        </span>
+                        {r.reason && (
+                          <span className="text-small text-ink-muted italic">&ldquo;{r.reason}&rdquo;</span>
+                        )}
+                      </div>
+                      <span className="text-small text-amber shrink-0">awaiting friend</span>
+                    </li>
+                  )
+                })}
+              </ul>
             )}
           </section>
         )}
 
-        {/* Add-domain form */}
-        <section className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Block a domain</h2>
+        {/* Block a domain. */}
+        <section className="border-t border-rule pt-xl pb-xl">
+          <SectionLabel>Block a domain</SectionLabel>
           <AddDomainForm />
         </section>
 
-        {/* Blocklist */}
-        <section className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Blocklist</h2>
+        {/* Blocklist. */}
+        <section className="border-t border-rule pt-xl">
+          <SectionLabel>Blocklist</SectionLabel>
           {blLoading ? (
-            <p className="text-sm text-gray-400">Loading…</p>
+            <p className="text-body text-ink-faint">Loading…</p>
           ) : blocklist.length === 0 ? (
-            <p className="text-sm text-gray-400">No domains blocked yet.</p>
+            <p className="text-body text-ink-faint">Nothing blocked yet. Add a domain above to start.</p>
           ) : (
-            <ul className="divide-y divide-gray-100">
+            <ul className="flex flex-col">
               {blocklist.map(entry => {
                 const hasRequest = targetedIds.has(entry.id)
                 return (
-                  <li key={entry.id} className="flex items-center justify-between py-3 gap-3">
-                    <span className="font-mono text-sm text-gray-800 flex-1 truncate">{entry.domain}</span>
-                    <div className="flex items-center gap-3">
-                      {statusBadge(entry.status)}
-                      <span className="text-xs text-gray-400 hidden sm:inline">{formatDate(entry.added_at)}</span>
+                  <li
+                    key={entry.id}
+                    className="flex items-center justify-between py-sm border-b border-rule last:border-0 gap-md"
+                  >
+                    <span className="font-mono text-body text-ink flex-1 truncate">
+                      {entry.domain}
+                    </span>
+                    <div className="flex items-center gap-md shrink-0">
+                      <StatusBadge status={entry.status} />
+                      <span className="text-micro text-ink-faint hidden sm:inline">
+                        {formatDate(entry.added_at)}
+                      </span>
                       {entry.status === 'active' && !hasRequest && (
                         <button
                           onClick={() => setRemovalTarget(entry)}
-                          className="text-xs text-gray-500 hover:text-gray-900 border border-gray-300 rounded-md px-2 py-1 transition-colors"
+                          className="text-small text-ink-muted hover:text-ink transition-colors border-b border-rule hover:border-ink pb-2xs"
                         >
                           Request removal
                         </button>

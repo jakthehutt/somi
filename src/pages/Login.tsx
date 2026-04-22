@@ -20,33 +20,54 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-md w-full">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-1">blockd</h1>
-        <p className="text-gray-500 text-sm mb-8">Sign in to continue.</p>
+    <div className="min-h-screen bg-paper flex items-center justify-center px-lg">
+      <div className="w-full max-w-md py-3xl">
+        <h1
+          className="text-display font-display text-ink mb-xs"
+          style={{ letterSpacing: '-0.02em' }}
+        >
+          sovereign mind
+        </h1>
+        <p className="text-body text-ink-muted mb-2xl" style={{ maxWidth: '28ch' }}>
+          A pact is in force. Sign in to read it.
+        </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            type="email"
-            required
-            placeholder="you@example.com"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-          />
-          <input
-            type="password"
-            required
-            placeholder="Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-          />
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-lg">
+          <label className="flex flex-col gap-2xs">
+            <span className="text-micro font-body text-ink-muted uppercase" style={{ letterSpacing: '0.12em' }}>
+              Email
+            </span>
+            <input
+              type="email"
+              required
+              placeholder="you@example.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="bg-transparent border-b border-rule focus:border-ink focus:outline-none py-xs text-body text-ink placeholder:text-ink-faint transition-colors"
+            />
+          </label>
+
+          <label className="flex flex-col gap-2xs">
+            <span className="text-micro font-body text-ink-muted uppercase" style={{ letterSpacing: '0.12em' }}>
+              Password
+            </span>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="bg-transparent border-b border-rule focus:border-ink focus:outline-none py-xs text-body text-ink transition-colors"
+            />
+          </label>
+
+          {error && (
+            <p className="text-small text-oxblood" role="alert">{error}</p>
+          )}
+
           <button
             type="submit"
             disabled={loading}
-            className="bg-gray-900 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-gray-700 disabled:opacity-50 transition-colors"
+            className="mt-md self-start bg-oxblood text-paper hover:bg-oxblood-hover disabled:opacity-50 px-lg py-sm text-small font-medium transition-colors"
           >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>

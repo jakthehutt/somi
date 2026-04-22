@@ -13,7 +13,7 @@ function formatDate(iso: string) {
   })
 }
 
-// Friend needs to see blocklist domains and owner profiles — small map queries
+// Friend needs to read the blocklist and owner profiles — small map queries.
 function useBlocklistAll() {
   return useQuery<BlocklistEntry[]>({
     queryKey: ['blocklist', 'all'],
@@ -36,6 +36,18 @@ function useProfiles() {
   })
 }
 
+function SectionLabel({ children, accent }: { children: React.ReactNode; accent?: 'ink' | 'sage' | 'amber' }) {
+  const color = { ink: 'text-ink-muted', sage: 'text-sage', amber: 'text-amber' }[accent ?? 'ink']
+  return (
+    <h2
+      className={`${color} text-micro font-body font-semibold uppercase mb-md`}
+      style={{ letterSpacing: '0.12em' }}
+    >
+      {children}
+    </h2>
+  )
+}
+
 function RequestCard({
   req, entry, requester, lockState,
 }: {
@@ -47,43 +59,52 @@ function RequestCard({
   const approve = useApproveRequest()
   const pending = approve.isPending
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5">
-      <div className="flex items-start justify-between gap-4 mb-3">
-        <div>
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Request to unblock</p>
-          <p className="font-mono text-gray-900 text-base">{entry?.domain ?? 'lock change'}</p>
+    <article className="py-lg border-b border-rule last:border-0">
+      <div className="flex items-start justify-between gap-lg mb-md">
+        <div className="min-w-0">
+          <p
+            className="text-micro text-ink-faint uppercase mb-xs"
+            style={{ letterSpacing: '0.12em' }}
+          >
+            Request to unblock
+          </p>
+          <p className="font-mono text-h3 text-ink truncate">{entry?.domain ?? 'lock change'}</p>
           {req.reason && (
-            <p className="text-sm text-gray-600 mt-2 italic">"{req.reason}"</p>
+            <p className="text-body text-ink-muted italic mt-sm" style={{ maxWidth: '52ch' }}>
+              &ldquo;{req.reason}&rdquo;
+            </p>
           )}
         </div>
-        <div className="text-right text-xs text-gray-400">
+        <time className="text-small text-ink-faint shrink-0 pt-2xs">
           {formatDate(req.requested_at)}
-        </div>
+        </time>
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-        <p className="text-xs text-gray-500">
-          From <span className="text-gray-700">{requester?.email ?? 'unknown'}</span>
-          {lockState && ` · if approved, unblocks after ${lockState.cooling_off_hours}h`}
+      <div className="flex items-center justify-between gap-md flex-wrap">
+        <p className="text-small text-ink-muted">
+          From <span className="text-ink font-mono">{requester?.email ?? 'unknown'}</span>
+          {lockState && (
+            <> &middot; if approved, unblocks after {lockState.cooling_off_hours}h</>
+          )}
         </p>
-        <div className="flex gap-2">
+        <div className="flex gap-sm">
           <button
             onClick={() => approve.mutate({ requestId: req.id, approve: false })}
             disabled={pending}
-            className="text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg px-4 py-1.5 disabled:opacity-50 transition-colors"
+            className="text-small text-ink-muted hover:text-ink border border-rule hover:border-ink px-md py-xs disabled:opacity-50 transition-colors"
           >
             Deny
           </button>
           <button
             onClick={() => approve.mutate({ requestId: req.id, approve: true })}
             disabled={pending}
-            className="bg-gray-900 text-white rounded-lg px-4 py-1.5 text-sm font-medium hover:bg-gray-700 disabled:opacity-50 transition-colors"
+            className="bg-oxblood text-paper hover:bg-oxblood-hover disabled:opacity-50 px-md py-xs text-small font-medium transition-colors"
           >
             {pending ? 'Saving…' : 'Approve'}
           </button>
         </div>
       </div>
-    </div>
+    </article>
   )
 }
 
@@ -95,40 +116,48 @@ export default function FriendDashboard() {
   const { data: profiles  = [] }              = useProfiles()
   const { data: lockState }                   = useLockState()
 
-  // Approved but not yet executed — show friend the live countdown too
+  // Approved but not yet executed — friend sees the live countdown too.
   const awaitingExecution = all.filter(r => r.status === 'approved')
 
   const blocklistMap = new Map(blocklist.map(b => [b.id, b]))
   const profileMap   = new Map(profiles.map(p => [p.id, p]))
 
-  // History = non-pending requests
+  // Recent non-pending history, most recent first.
   const history = all.filter(r => r.status !== 'pending').slice(0, 20)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">blockd · friend</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-500">{profile?.email}</span>
-          <button onClick={signOut} className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+    <div className="min-h-screen bg-paper">
+      <header className="border-b border-rule px-lg py-md flex items-center justify-between">
+        <div className="flex items-baseline gap-sm">
+          <h1 className="text-h3 font-display text-ink" style={{ letterSpacing: '-0.015em' }}>
+            sovereign mind
+          </h1>
+          <span
+            className="text-micro text-ink-faint uppercase"
+            style={{ letterSpacing: '0.14em' }}
+          >
+            friend
+          </span>
+        </div>
+        <nav className="flex items-center gap-lg text-small text-ink-muted">
+          <span className="text-ink-faint">{profile?.email}</span>
+          <button onClick={signOut} className="hover:text-ink transition-colors">
             Sign out
           </button>
-        </div>
+        </nav>
       </header>
 
-      <main className="max-w-2xl mx-auto px-6 py-8 flex flex-col gap-6">
-        <section>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+      <main className="max-w-2xl mx-auto px-lg pt-2xl pb-3xl">
+        <section className="pb-xl">
+          <SectionLabel>
             Pending requests {pending.length > 0 && `(${pending.length})`}
-          </h2>
+          </SectionLabel>
           {pl ? (
-            <p className="text-sm text-gray-400">Loading…</p>
+            <p className="text-body text-ink-faint">Loading…</p>
           ) : pending.length === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-200 p-6 text-center">
-              <p className="text-sm text-gray-400">No pending requests.</p>
-            </div>
+            <p className="text-body text-ink-faint">Nothing waiting on you right now.</p>
           ) : (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col">
               {pending.map(req => (
                 <RequestCard
                   key={req.id}
@@ -143,52 +172,71 @@ export default function FriendDashboard() {
         </section>
 
         {awaitingExecution.length > 0 && lockState && (
-          <section>
-            <h2 className="text-sm font-semibold text-green-700 uppercase tracking-wide mb-3">
+          <section className="border-t border-rule pt-xl pb-xl">
+            <SectionLabel accent="sage">
               Approved — executing soon ({awaitingExecution.length})
-            </h2>
-            <div className="bg-white rounded-xl border border-green-200 divide-y divide-gray-100">
+            </SectionLabel>
+            <ul className="flex flex-col">
               {awaitingExecution.map(r => {
                 const entry = r.target_blocklist_id ? blocklistMap.get(r.target_blocklist_id) : undefined
                 const execAt = executionTime(r.approved_at!, lockState.cooling_off_hours)
                 return (
-                  <div key={r.id} className="flex items-center justify-between px-4 py-2.5 text-sm">
-                    <span className="font-mono text-gray-800">{entry?.domain ?? 'lock change'}</span>
-                    <span className="text-xs text-green-600">unblocks in {formatCountdown(execAt)}</span>
-                  </div>
+                  <li
+                    key={r.id}
+                    className="flex items-baseline justify-between py-sm border-b border-rule last:border-0 gap-md"
+                  >
+                    <span className="font-mono text-body text-ink truncate">
+                      {entry?.domain ?? 'lock change'}
+                    </span>
+                    <span className="text-small text-sage shrink-0">
+                      unblocks in {formatCountdown(execAt)}
+                    </span>
+                  </li>
                 )
               })}
-            </div>
+            </ul>
           </section>
         )}
 
         {history.length > 0 && (
-          <section>
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">History</h2>
-            <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
-              {al ? (
-                <p className="text-sm text-gray-400 p-4">Loading…</p>
-              ) : (
-                history.map(req => {
+          <section className="border-t border-rule pt-xl">
+            <SectionLabel>History</SectionLabel>
+            {al ? (
+              <p className="text-body text-ink-faint">Loading…</p>
+            ) : (
+              <ul className="flex flex-col">
+                {history.map(req => {
                   const entry = req.target_blocklist_id ? blocklistMap.get(req.target_blocklist_id) : undefined
                   const statusColor = {
-                    approved: 'text-green-600',
-                    denied:   'text-red-600',
-                    executed: 'text-blue-600',
-                    pending:  'text-yellow-600',
+                    approved: 'text-sage',
+                    denied:   'text-oxblood',
+                    executed: 'text-sage',
+                    pending:  'text-amber',
                   }[req.status]
                   return (
-                    <div key={req.id} className="flex items-center justify-between px-4 py-2.5 text-sm">
-                      <span className="font-mono text-gray-800">{entry?.domain ?? 'lock change'}</span>
-                      <div className="flex items-center gap-3">
-                        <span className={`text-xs uppercase tracking-wide ${statusColor}`}>{req.status}</span>
-                        <span className="text-xs text-gray-400">{formatDate(req.requested_at)}</span>
+                    <li
+                      key={req.id}
+                      className="flex items-baseline justify-between py-sm border-b border-rule last:border-0 gap-md"
+                    >
+                      <span className="font-mono text-body text-ink truncate">
+                        {entry?.domain ?? 'lock change'}
+                      </span>
+                      <div className="flex items-center gap-md shrink-0">
+                        <span
+                          className={`${statusColor} text-micro uppercase`}
+                          style={{ letterSpacing: '0.1em' }}
+                        >
+                          {req.status}
+                        </span>
+                        <span className="text-micro text-ink-faint">
+                          {formatDate(req.requested_at)}
+                        </span>
                       </div>
-                    </div>
+                    </li>
                   )
-                })
-              )}
-            </div>
+                })}
+              </ul>
+            )}
           </section>
         )}
       </main>

@@ -15,6 +15,17 @@ interface Props {
   lockState: LockState
 }
 
+function MicroLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <h3
+      className="text-micro font-body font-semibold text-ink-muted uppercase mb-sm"
+      style={{ letterSpacing: '0.12em' }}
+    >
+      {children}
+    </h3>
+  )
+}
+
 export default function LockControls({ lockState }: Props) {
   const { user } = useAuth()
   const qc       = useQueryClient()
@@ -61,49 +72,54 @@ export default function LockControls({ lockState }: Props) {
   const maxShortenInput = current ? current.toISOString().slice(0, 16) : minShortenInput
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-lg">
       <div>
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Extend lock (instant)</h3>
-        <div className="flex flex-wrap gap-2">
+        <MicroLabel>Extend (instant)</MicroLabel>
+        <div className="flex flex-wrap gap-xs">
           {QUICK_EXTENSIONS.map(opt => (
             <button
               key={opt.label}
               onClick={() => extend.mutate(opt.days)}
               disabled={extend.isPending}
-              className="text-sm text-gray-700 border border-gray-300 rounded-lg px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              className="text-small text-ink-muted border border-rule hover:border-ink hover:text-ink px-md py-xs disabled:opacity-50 transition-colors"
             >
               {opt.label}
             </button>
           ))}
         </div>
         {extend.error && (
-          <p className="text-red-600 text-xs mt-2">{(extend.error as Error).message}</p>
+          <p className="text-small text-oxblood mt-sm" role="alert">
+            {(extend.error as Error).message}
+          </p>
         )}
       </div>
 
       {current && current.getTime() > Date.now() && (
-        <div className="pt-4 border-t border-gray-100">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-            Shorten lock (requires approval)
-          </h3>
+        <div className="border-t border-rule pt-lg">
+          <MicroLabel>Shorten (requires approval)</MicroLabel>
           {!showShortenForm ? (
             <button
               onClick={() => setShowShortenForm(true)}
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+              className="text-small text-ink-muted hover:text-ink border-b border-rule hover:border-ink pb-2xs transition-colors"
             >
               Request shorter lock…
             </button>
           ) : (
-            <div className="flex flex-col gap-3">
-              <label className="text-xs text-gray-500">
-                Shorten to
+            <div className="flex flex-col gap-md">
+              <label className="flex flex-col gap-2xs">
+                <span
+                  className="text-micro text-ink-faint uppercase"
+                  style={{ letterSpacing: '0.12em' }}
+                >
+                  Shorten to
+                </span>
                 <input
                   type="datetime-local"
                   min={minShortenInput}
                   max={maxShortenInput}
                   value={shorteningTo}
                   onChange={e => setShorteningTo(e.target.value)}
-                  className="block mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                  className="bg-transparent border-b border-rule focus:border-ink focus:outline-none py-xs text-body text-ink transition-colors"
                 />
               </label>
               <textarea
@@ -111,30 +127,32 @@ export default function LockControls({ lockState }: Props) {
                 placeholder="Reason (optional)"
                 value={shortenReason}
                 onChange={e => setShortenReason(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
+                className="bg-transparent border border-rule focus:border-ink focus:outline-none px-sm py-xs text-small text-ink placeholder:text-ink-faint resize-none transition-colors"
               />
               {requestShortening.error && (
-                <p className="text-red-600 text-xs">{(requestShortening.error as Error).message}</p>
+                <p className="text-small text-oxblood" role="alert">
+                  {(requestShortening.error as Error).message}
+                </p>
               )}
-              <div className="flex gap-2 justify-end">
+              <div className="flex gap-sm justify-end">
                 <button
                   onClick={() => { setShowShortenForm(false); setShorteningTo(''); setShortenReason('') }}
                   disabled={requestShortening.isPending}
-                  className="text-sm text-gray-500 hover:text-gray-900 px-3 py-1.5 transition-colors"
+                  className="text-small text-ink-muted hover:text-ink px-sm py-xs transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => requestShortening.mutate()}
                   disabled={!shorteningTo || requestShortening.isPending}
-                  className="bg-gray-900 text-white rounded-lg px-4 py-1.5 text-sm font-medium hover:bg-gray-700 disabled:opacity-50 transition-colors"
+                  className="bg-oxblood text-paper hover:bg-oxblood-hover disabled:opacity-50 px-md py-xs text-small font-medium transition-colors"
                 >
                   {requestShortening.isPending ? 'Submitting…' : 'Submit request'}
                 </button>
               </div>
               {shorteningTo && (
-                <p className="text-xs text-gray-400">
-                  If approved, lock shortens to {new Date(shorteningTo).toLocaleString()} — takes effect {formatCountdown(new Date(Date.now() + lockState.cooling_off_hours * 3_600_000).toISOString())} after friend approval.
+                <p className="text-small text-ink-faint">
+                  If approved, the lock shortens to {new Date(shorteningTo).toLocaleString()} — taking effect {formatCountdown(new Date(Date.now() + lockState.cooling_off_hours * 3_600_000).toISOString())} after your friend approves.
                 </p>
               )}
             </div>

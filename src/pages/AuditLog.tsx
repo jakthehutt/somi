@@ -20,18 +20,20 @@ function formatTimestamp(iso: string) {
   })
 }
 
-function actionBadge(action: string) {
+function ActionLabel({ action }: { action: string }) {
   const [table, op] = action.split(':')
   const opColor = {
-    insert: 'bg-green-50 text-green-700',
-    update: 'bg-blue-50 text-blue-700',
-    delete: 'bg-red-50 text-red-700',
-  }[op ?? ''] ?? 'bg-gray-50 text-gray-700'
+    insert: 'text-sage',
+    update: 'text-ink-muted',
+    delete: 'text-oxblood',
+  }[op ?? ''] ?? 'text-ink-muted'
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-xs font-mono text-gray-600">{table}</span>
-      <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${opColor}`}>{op}</span>
-    </div>
+    <span className="flex items-center gap-xs">
+      <span className="text-micro font-mono text-ink">{table}</span>
+      <span className={`${opColor} text-micro uppercase`} style={{ letterSpacing: '0.1em' }}>
+        {op}
+      </span>
+    </span>
   )
 }
 
@@ -86,32 +88,41 @@ export default function AuditLog() {
   const profileMap = new Map(profiles.map(p => [p.id, p]))
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link to="/" className="text-lg font-semibold text-gray-900 hover:text-gray-600 transition-colors">
-            blockd
+    <div className="min-h-screen bg-paper">
+      <header className="border-b border-rule px-lg py-md flex items-center justify-between">
+        <div className="flex items-baseline gap-sm">
+          <Link
+            to="/"
+            className="text-h3 font-display text-ink hover:text-oxblood transition-colors"
+            style={{ letterSpacing: '-0.015em' }}
+          >
+            sovereign mind
           </Link>
-          <span className="text-sm text-gray-500">Audit log</span>
+          <span
+            className="text-micro text-ink-faint uppercase"
+            style={{ letterSpacing: '0.14em' }}
+          >
+            audit log
+          </span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-500">{profile?.email}</span>
-          <button onClick={signOut} className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+        <nav className="flex items-center gap-lg text-small text-ink-muted">
+          <span className="text-ink-faint">{profile?.email}</span>
+          <button onClick={signOut} className="hover:text-ink transition-colors">
             Sign out
           </button>
-        </div>
+        </nav>
       </header>
 
-      <main className="max-w-3xl mx-auto px-6 py-8">
-        <div className="flex gap-2 mb-6 flex-wrap">
+      <main className="max-w-3xl mx-auto px-lg pt-2xl pb-3xl">
+        <div className="flex gap-xs mb-xl flex-wrap">
           {FILTERS.map(f => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+              className={`text-small px-md py-xs border transition-colors ${
                 filter === f.key
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                  ? 'bg-ink text-paper border-ink'
+                  : 'bg-transparent text-ink-muted border-rule hover:border-ink hover:text-ink'
               }`}
             >
               {f.label}
@@ -119,37 +130,38 @@ export default function AuditLog() {
           ))}
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200">
-          {isLoading ? (
-            <p className="text-sm text-gray-400 p-6">Loading…</p>
-          ) : log.length === 0 ? (
-            <p className="text-sm text-gray-400 p-6 text-center">No audit entries yet.</p>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {log.map(entry => {
-                const actor = entry.actor ? profileMap.get(entry.actor) : null
-                return (
-                  <li key={entry.id} className="px-5 py-3 flex items-start gap-4 text-sm">
-                    <span className="text-xs text-gray-400 font-mono shrink-0 w-40 pt-0.5">
-                      {formatTimestamp(entry.created_at)}
-                    </span>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between gap-3 mb-1">
-                        {actionBadge(entry.action)}
-                        <span className="text-xs text-gray-400">
-                          {actor ? actor.email : entry.actor ? 'unknown user' : 'system'}
-                        </span>
-                      </div>
-                      <p className="text-gray-700 text-sm font-mono truncate">
-                        {summaryOf(entry.action, entry.payload)}
-                      </p>
+        {isLoading ? (
+          <p className="text-body text-ink-faint">Loading…</p>
+        ) : log.length === 0 ? (
+          <p className="text-body text-ink-faint">No audit entries yet.</p>
+        ) : (
+          <ul className="flex flex-col">
+            {log.map(entry => {
+              const actor = entry.actor ? profileMap.get(entry.actor) : null
+              return (
+                <li
+                  key={entry.id}
+                  className="flex items-start gap-lg py-sm border-b border-rule last:border-0"
+                >
+                  <time className="text-micro text-ink-faint font-mono shrink-0 w-44 pt-2xs">
+                    {formatTimestamp(entry.created_at)}
+                  </time>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-md mb-2xs">
+                      <ActionLabel action={entry.action} />
+                      <span className="text-micro text-ink-faint">
+                        {actor ? actor.email : entry.actor ? 'unknown user' : 'system'}
+                      </span>
                     </div>
-                  </li>
-                )
-              })}
-            </ul>
-          )}
-        </div>
+                    <p className="text-small font-mono text-ink-muted truncate">
+                      {summaryOf(entry.action, entry.payload)}
+                    </p>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </main>
     </div>
   )
