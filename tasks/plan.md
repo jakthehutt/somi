@@ -7,7 +7,7 @@ Track one commit per numbered step. Check off as completed.
 - [x] **Step 3** — Schema test fixtures: `supabase/tests/rls.sql` exercising RLS as different roles
 - [x] **Step 4** — NextDNS API client: `src/lib/nextdns.ts` with add/remove/list, Vitest tests
 - [x] **Step 5** — Sync edge function: `supabase/functions/sync-nextdns/index.ts`, triggered on blocklist changes
-- [ ] **Step 6** — Dashboard read view: `/` owner route, `/login` magic-link, TanStack Query hooks
+- [x] **Step 6** — Dashboard read view: `/` owner route, `/login` magic-link, TanStack Query hooks
 - [ ] **Step 7** — Add-to-blocklist flow: form + validation + insert; first end-to-end proof *(pause for manual verify)*
 - [ ] **Step 8** — Unlock request flow: "Request removal" button + modal + pending list
 - [ ] **Step 9** — Friend view + approval: `/friend` route, pending list, approve/deny buttons
