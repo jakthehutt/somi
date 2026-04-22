@@ -2,8 +2,10 @@ import { useQuery }            from '@tanstack/react-query'
 import { supabase }             from '../lib/supabase'
 import { useAuth }              from '../hooks/useAuth'
 import { useUnlockRequests }    from '../hooks/useUnlockRequests'
+import { useLockState }         from '../hooks/useLockState'
 import { useApproveRequest }    from '../hooks/useApproveRequest'
-import type { BlocklistEntry, Profile, UnlockRequest } from '../lib/types'
+import { formatCountdown, executionTime } from '../lib/countdown'
+import type { BlocklistEntry, Profile, UnlockRequest, LockState } from '../lib/types'
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('en-GB', {
@@ -35,11 +37,12 @@ function useProfiles() {
 }
 
 function RequestCard({
-  req, entry, requester,
+  req, entry, requester, lockState,
 }: {
   req: UnlockRequest
   entry?: BlocklistEntry
   requester?: Profile
+  lockState?: LockState
 }) {
   const approve = useApproveRequest()
   const pending = approve.isPending
@@ -61,6 +64,7 @@ function RequestCard({
       <div className="flex items-center justify-between pt-3 border-t border-gray-100">
         <p className="text-xs text-gray-500">
           From <span className="text-gray-700">{requester?.email ?? 'unknown'}</span>
+          {lockState && ` · if approved, unblocks after ${lockState.cooling_off_hours}h`}
         </p>
         <div className="flex gap-2">
           <button
@@ -89,6 +93,10 @@ export default function FriendDashboard() {
   const { data: all     = [], isLoading: al } = useUnlockRequests('all')
   const { data: blocklist = [] }              = useBlocklistAll()
   const { data: profiles  = [] }              = useProfiles()
+  const { data: lockState }                   = useLockState()
+
+  // Approved but not yet executed — show friend the live countdown too
+  const awaitingExecution = all.filter(r => r.status === 'approved')
 
   const blocklistMap = new Map(blocklist.map(b => [b.id, b]))
   const profileMap   = new Map(profiles.map(p => [p.id, p]))
@@ -127,11 +135,32 @@ export default function FriendDashboard() {
                   req={req}
                   entry={req.target_blocklist_id ? blocklistMap.get(req.target_blocklist_id) : undefined}
                   requester={profileMap.get(req.requested_by)}
+                  lockState={lockState}
                 />
               ))}
             </div>
           )}
         </section>
+
+        {awaitingExecution.length > 0 && lockState && (
+          <section>
+            <h2 className="text-sm font-semibold text-green-700 uppercase tracking-wide mb-3">
+              Approved — executing soon ({awaitingExecution.length})
+            </h2>
+            <div className="bg-white rounded-xl border border-green-200 divide-y divide-gray-100">
+              {awaitingExecution.map(r => {
+                const entry = r.target_blocklist_id ? blocklistMap.get(r.target_blocklist_id) : undefined
+                const execAt = executionTime(r.approved_at!, lockState.cooling_off_hours)
+                return (
+                  <div key={r.id} className="flex items-center justify-between px-4 py-2.5 text-sm">
+                    <span className="font-mono text-gray-800">{entry?.domain ?? 'lock change'}</span>
+                    <span className="text-xs text-green-600">unblocks in {formatCountdown(execAt)}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        )}
 
         {history.length > 0 && (
           <section>
