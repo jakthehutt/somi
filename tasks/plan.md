@@ -13,5 +13,5 @@ Track one commit per numbered step. Check off as completed.
 - [x] **Step 9** — Friend view + approval: `/friend` route, pending list, approve/deny buttons
 - [x] **Step 10** — Cooling-off + execution: pg_cron job, countdown UI, executed status
 - [x] **Step 11** — Lock duration controls: extend (instant) vs shorten (approval required), RLS enforced
-- [ ] **Step 12** — Audit log: triggers on all mutating tables, `/log` page with filters
+- [x] **Step 12** — Audit log: triggers on all mutating tables, `/log` page with filters
 - [ ] **Step 13** — Polish + deploy: `.env.example`, README setup section, Vercel + Supabase prod docs

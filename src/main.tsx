@@ -8,6 +8,7 @@ import { missingEnvVars } from './lib/supabase'
 import Login           from './pages/Login'
 import Dashboard       from './pages/Dashboard'
 import FriendDashboard from './pages/FriendDashboard'
+import AuditLog        from './pages/AuditLog'
 import Unauthorized    from './pages/Unauthorized'
 import RequireRole     from './components/RequireRole'
 
@@ -44,6 +45,11 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/friend" element={
               <RequireRole role="friend">
                 <FriendDashboard />
+              </RequireRole>
+            } />
+            <Route path="/log" element={
+              <RequireRole role="owner">
+                <AuditLog />
               </RequireRole>
             } />
             <Route path="/" element={

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useBlocklist }       from '../hooks/useBlocklist'
 import { useLockState }       from '../hooks/useLockState'
 import { useUnlockRequests }  from '../hooks/useUnlockRequests'
@@ -56,6 +57,9 @@ export default function Dashboard() {
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <h1 className="text-lg font-semibold text-gray-900">blockd</h1>
         <div className="flex items-center gap-4">
+          <Link to="/log" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+            Audit log
+          </Link>
           <span className="text-sm text-gray-500">{profile?.email}</span>
           <button onClick={signOut} className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
             Sign out
