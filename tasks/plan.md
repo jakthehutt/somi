@@ -1,4 +1,4 @@
-# blockd — Build Plan
+# somi — sovereign mind — Build Plan
 
 Track one commit per numbered step. Check off as completed.
 

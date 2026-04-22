@@ -1,4 +1,4 @@
-# blockd — social-unlock website blocker
+# somi — sovereign mind
 
 A self-hosted dashboard that blocks websites on an Android phone via NextDNS, where **removing a block requires a friend's approval plus a cooling-off delay**. Adding blocks is instant. The whole point is moving the unlock decision off your own phone — where you'd cave in a weak moment — into a web flow that involves another human and a delay.
 
