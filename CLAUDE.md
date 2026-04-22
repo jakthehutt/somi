@@ -73,13 +73,9 @@ Format:
 
 Never skip this step, even for small or partial changes.
 
-## 6. Push to Both Remotes
+## 6. Naming Convention
 
-This repo has two remotes that must stay in sync:
-- `origin` → `https://github.com/jakthehutt/somi` (main repo)
-- `lovable` → `https://github.com/jakthehutt/git-connect.git` (Lovable sync)
-
-**Every push must go to both:**
-```bash
-git push origin main && git push lovable main
-```
+- **"somi"** is the technical slug only: package name, repo name, URL paths, file/folder names
+- **"sovereign mind"** is the brand: use it in all user-facing surfaces (`<title>`, `<h1>`, nav, headings, any visible copy)
+- Never write "somi — sovereign mind" in the UI — "sovereign mind" stands alone there
+- Never use "somi" in user-facing copy — it carries no meaning without the full name
