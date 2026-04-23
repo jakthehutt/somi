@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { useAuth }      from '../hooks/useAuth'
 import { useAuditLog }  from '../hooks/useAuditLog'
+import { Seal }         from '../components/Wordmark'
 import type { Profile } from '../lib/types'
 
 const FILTERS = [
@@ -28,7 +29,7 @@ function ActionLabel({ action }: { action: string }) {
     delete: 'text-oxblood',
   }[op ?? ''] ?? 'text-ink-muted'
   return (
-    <span className="flex items-center gap-xs">
+    <span className="flex items-center gap-2">
       <span className="text-micro font-mono text-ink">{table}</span>
       <span className={`${opColor} text-micro uppercase`} style={{ letterSpacing: '0.1em' }}>
         {op}
@@ -89,23 +90,23 @@ export default function AuditLog() {
 
   return (
     <div className="min-h-screen bg-paper">
-      <header className="border-b border-rule px-lg py-md flex items-center justify-between">
-        <div className="flex items-baseline gap-sm">
-          <Link
-            to="/"
-            className="text-h3 font-display text-ink hover:text-oxblood transition-colors"
+      <header className="border-b border-rule px-6 py-4 flex items-center justify-between">
+        <Link to="/" className="inline-flex items-baseline gap-3 group">
+          <Seal size={20} className="text-oxblood self-center" />
+          <span
+            className="text-h3 font-display text-ink group-hover:text-oxblood transition-colors"
             style={{ letterSpacing: '-0.015em' }}
           >
             sovereign mind
-          </Link>
+          </span>
           <span
-            className="text-micro text-ink-faint uppercase"
+            className="text-micro text-ink-faint uppercase self-center"
             style={{ letterSpacing: '0.14em' }}
           >
             audit log
           </span>
-        </div>
-        <nav className="flex items-center gap-lg text-small text-ink-muted">
+        </Link>
+        <nav className="flex items-center gap-6 text-small text-ink-muted">
           <span className="text-ink-faint">{profile?.email}</span>
           <button onClick={signOut} className="hover:text-ink transition-colors">
             Sign out
@@ -113,13 +114,13 @@ export default function AuditLog() {
         </nav>
       </header>
 
-      <main className="max-w-3xl mx-auto px-lg pt-2xl pb-3xl">
-        <div className="flex gap-xs mb-xl flex-wrap">
+      <main className="max-w-3xl mx-auto px-6 pt-12 pb-16">
+        <div className="flex gap-2 mb-8 flex-wrap">
           {FILTERS.map(f => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className={`text-small px-md py-xs border transition-colors ${
+              className={`text-small px-4 py-2 border transition-colors ${
                 filter === f.key
                   ? 'bg-ink text-paper border-ink'
                   : 'bg-transparent text-ink-muted border-rule hover:border-ink hover:text-ink'
@@ -141,13 +142,13 @@ export default function AuditLog() {
               return (
                 <li
                   key={entry.id}
-                  className="flex items-start gap-lg py-sm border-b border-rule last:border-0"
+                  className="flex items-start gap-6 py-3 border-b border-rule last:border-0"
                 >
-                  <time className="text-micro text-ink-faint font-mono shrink-0 w-44 pt-2xs">
+                  <time className="text-micro text-ink-faint font-mono shrink-0 w-44 pt-1">
                     {formatTimestamp(entry.created_at)}
                   </time>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-md mb-2xs">
+                    <div className="flex items-center justify-between gap-4 mb-1">
                       <ActionLabel action={entry.action} />
                       <span className="text-micro text-ink-faint">
                         {actor ? actor.email : entry.actor ? 'unknown user' : 'system'}

@@ -52,15 +52,12 @@
   --text-h2--line-height:      1.2;
   --text-display--line-height: 1.15;
 
-  /* Spacing. 4pt scale, semantic names. */
-  --spacing-2xs: 0.25rem;
-  --spacing-xs:  0.5rem;
-  --spacing-sm:  0.75rem;
-  --spacing-md:  1rem;
-  --spacing-lg:  1.5rem;
-  --spacing-xl:  2rem;
-  --spacing-2xl: 3rem;
-  --spacing-3xl: 4rem;
+  /* Spacing: rely on Tailwind v4's default 0.25rem multiplier.
+     We don't declare --spacing-<suffix> tokens (md, lg, xl, 2xl, 3xl)
+     because Tailwind resolves max-w-<suffix> against that namespace —
+     if we did, max-w-2xl would collapse to 3rem instead of 42rem. Use
+     the numeric scale (p-4 = 1rem, p-6 = 1.5rem, p-8 = 2rem, p-12 = 3rem,
+     p-16 = 4rem) which maps 1:1 to the 4pt scale in tasks/brand.md §6.4. */
 
   /* Radii. Minimal — the brand is paper, not iOS. */
   --radius-sm: 2px;

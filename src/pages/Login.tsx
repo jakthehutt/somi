@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { Wordmark } from '../components/Wordmark'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -20,20 +21,17 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-paper flex items-center justify-center px-lg">
-      <div className="w-full max-w-md py-3xl">
-        <h1
-          className="text-display font-display text-ink mb-xs"
-          style={{ letterSpacing: '-0.02em' }}
-        >
-          sovereign mind
-        </h1>
-        <p className="text-body text-ink-muted mb-2xl" style={{ maxWidth: '28ch' }}>
+    <div className="min-h-screen bg-paper flex items-center justify-center px-6">
+      <div className="w-full max-w-md py-16">
+        <div className="mb-2">
+          <Wordmark as="h1" size="display" />
+        </div>
+        <p className="text-body text-ink-muted mb-12" style={{ maxWidth: '28ch' }}>
           A pact is in force. Sign in to read it.
         </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-lg">
-          <label className="flex flex-col gap-2xs">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <label className="flex flex-col gap-1">
             <span className="text-micro font-body text-ink-muted uppercase" style={{ letterSpacing: '0.12em' }}>
               Email
             </span>
@@ -43,11 +41,11 @@ export default function Login() {
               placeholder="you@example.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="bg-transparent border-b border-rule focus:border-ink focus:outline-none py-xs text-body text-ink placeholder:text-ink-faint transition-colors"
+              className="bg-transparent border-b border-rule focus:border-ink focus:outline-none py-2 text-body text-ink placeholder:text-ink-faint transition-colors"
             />
           </label>
 
-          <label className="flex flex-col gap-2xs">
+          <label className="flex flex-col gap-1">
             <span className="text-micro font-body text-ink-muted uppercase" style={{ letterSpacing: '0.12em' }}>
               Password
             </span>
@@ -56,7 +54,7 @@ export default function Login() {
               required
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="bg-transparent border-b border-rule focus:border-ink focus:outline-none py-xs text-body text-ink transition-colors"
+              className="bg-transparent border-b border-rule focus:border-ink focus:outline-none py-2 text-body text-ink transition-colors"
             />
           </label>
 
@@ -67,7 +65,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-md self-start bg-oxblood text-paper hover:bg-oxblood-hover disabled:opacity-50 px-lg py-sm text-small font-medium transition-colors"
+            className="mt-4 self-start bg-oxblood text-paper hover:bg-oxblood-hover disabled:opacity-50 px-6 py-3 text-small font-medium transition-colors"
           >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>

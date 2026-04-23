@@ -18,7 +18,7 @@ interface Props {
 function MicroLabel({ children }: { children: React.ReactNode }) {
   return (
     <h3
-      className="text-micro font-body font-semibold text-ink-muted uppercase mb-sm"
+      className="text-micro font-body font-semibold text-ink-muted uppercase mb-3"
       style={{ letterSpacing: '0.12em' }}
     >
       {children}
@@ -72,41 +72,41 @@ export default function LockControls({ lockState }: Props) {
   const maxShortenInput = current ? current.toISOString().slice(0, 16) : minShortenInput
 
   return (
-    <div className="flex flex-col gap-lg">
+    <div className="flex flex-col gap-6">
       <div>
         <MicroLabel>Extend (instant)</MicroLabel>
-        <div className="flex flex-wrap gap-xs">
+        <div className="flex flex-wrap gap-2">
           {QUICK_EXTENSIONS.map(opt => (
             <button
               key={opt.label}
               onClick={() => extend.mutate(opt.days)}
               disabled={extend.isPending}
-              className="text-small text-ink-muted border border-rule hover:border-ink hover:text-ink px-md py-xs disabled:opacity-50 transition-colors"
+              className="text-small text-ink-muted border border-rule hover:border-ink hover:text-ink px-4 py-2 disabled:opacity-50 transition-colors"
             >
               {opt.label}
             </button>
           ))}
         </div>
         {extend.error && (
-          <p className="text-small text-oxblood mt-sm" role="alert">
+          <p className="text-small text-oxblood mt-3" role="alert">
             {(extend.error as Error).message}
           </p>
         )}
       </div>
 
       {current && current.getTime() > Date.now() && (
-        <div className="border-t border-rule pt-lg">
+        <div className="border-t border-rule pt-6">
           <MicroLabel>Shorten (requires approval)</MicroLabel>
           {!showShortenForm ? (
             <button
               onClick={() => setShowShortenForm(true)}
-              className="text-small text-ink-muted hover:text-ink border-b border-rule hover:border-ink pb-2xs transition-colors"
+              className="text-small text-ink-muted hover:text-ink border-b border-rule hover:border-ink pb-1 transition-colors"
             >
               Request shorter lock…
             </button>
           ) : (
-            <div className="flex flex-col gap-md">
-              <label className="flex flex-col gap-2xs">
+            <div className="flex flex-col gap-4">
+              <label className="flex flex-col gap-1">
                 <span
                   className="text-micro text-ink-faint uppercase"
                   style={{ letterSpacing: '0.12em' }}
@@ -119,7 +119,7 @@ export default function LockControls({ lockState }: Props) {
                   max={maxShortenInput}
                   value={shorteningTo}
                   onChange={e => setShorteningTo(e.target.value)}
-                  className="bg-transparent border-b border-rule focus:border-ink focus:outline-none py-xs text-body text-ink transition-colors"
+                  className="bg-transparent border-b border-rule focus:border-ink focus:outline-none py-2 text-body text-ink transition-colors"
                 />
               </label>
               <textarea
@@ -127,25 +127,25 @@ export default function LockControls({ lockState }: Props) {
                 placeholder="Reason (optional)"
                 value={shortenReason}
                 onChange={e => setShortenReason(e.target.value)}
-                className="bg-transparent border border-rule focus:border-ink focus:outline-none px-sm py-xs text-small text-ink placeholder:text-ink-faint resize-none transition-colors"
+                className="bg-transparent border border-rule focus:border-ink focus:outline-none px-3 py-2 text-small text-ink placeholder:text-ink-faint resize-none transition-colors"
               />
               {requestShortening.error && (
                 <p className="text-small text-oxblood" role="alert">
                   {(requestShortening.error as Error).message}
                 </p>
               )}
-              <div className="flex gap-sm justify-end">
+              <div className="flex gap-3 justify-end">
                 <button
                   onClick={() => { setShowShortenForm(false); setShorteningTo(''); setShortenReason('') }}
                   disabled={requestShortening.isPending}
-                  className="text-small text-ink-muted hover:text-ink px-sm py-xs transition-colors"
+                  className="text-small text-ink-muted hover:text-ink px-3 py-2 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => requestShortening.mutate()}
                   disabled={!shorteningTo || requestShortening.isPending}
-                  className="bg-oxblood text-paper hover:bg-oxblood-hover disabled:opacity-50 px-md py-xs text-small font-medium transition-colors"
+                  className="bg-oxblood text-paper hover:bg-oxblood-hover disabled:opacity-50 px-4 py-2 text-small font-medium transition-colors"
                 >
                   {requestShortening.isPending ? 'Submitting…' : 'Submit request'}
                 </button>

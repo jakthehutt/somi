@@ -7,6 +7,7 @@ import { useAuth }            from '../hooks/useAuth'
 import AddDomainForm          from '../components/AddDomainForm'
 import LockControls           from '../components/LockControls'
 import RequestRemovalModal    from '../components/RequestRemovalModal'
+import { Wordmark }            from '../components/Wordmark'
 import { formatCountdown, executionTime } from '../lib/countdown'
 import type { BlocklistEntry } from '../lib/types'
 
@@ -25,7 +26,7 @@ function StatusBadge({ status }: { status: BlocklistEntry['status'] }) {
   const label = { active: 'Blocked', pending_removal: 'Pending', removed: 'Removed' }[status]
   return (
     <span
-      className={`${styles} text-micro font-medium px-xs py-2xs tracking-wide`}
+      className={`${styles} text-micro font-medium px-2 py-1 tracking-wide`}
       style={{ letterSpacing: '0.06em' }}
     >
       {label}
@@ -51,7 +52,7 @@ function SectionLabel({ children, accent }: { children: React.ReactNode; accent?
   }[accent ?? 'ink']
   return (
     <h2
-      className={`${color} text-micro font-body font-semibold uppercase mb-md`}
+      className={`${color} text-micro font-body font-semibold uppercase mb-4`}
       style={{ letterSpacing: '0.12em' }}
     >
       {children}
@@ -74,11 +75,9 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-paper">
-      <header className="border-b border-rule px-lg py-md flex items-center justify-between">
-        <h1 className="text-h3 font-display text-ink" style={{ letterSpacing: '-0.015em' }}>
-          sovereign mind
-        </h1>
-        <nav className="flex items-center gap-lg text-small text-ink-muted">
+      <header className="border-b border-rule px-6 py-4 flex items-center justify-between">
+        <Wordmark as="h1" />
+        <nav className="flex items-center gap-6 text-small text-ink-muted">
           <Link to="/log" className="hover:text-ink transition-colors">Audit log</Link>
           <span className="text-ink-faint">{profile?.email}</span>
           <button onClick={signOut} className="hover:text-ink transition-colors">
@@ -87,15 +86,15 @@ export default function Dashboard() {
         </nav>
       </header>
 
-      <main className="max-w-2xl mx-auto px-lg pt-2xl pb-3xl">
+      <main className="max-w-2xl mx-auto px-6 pt-12 pb-16">
 
         {/* Lock state — the room's centerpiece. */}
-        <section className="pb-xl">
+        <section className="pb-8">
           <SectionLabel>Lock state</SectionLabel>
           {lsLoading ? (
             <p className="text-body text-ink-faint">Loading…</p>
           ) : lockState?.locked_until ? (
-            <div className="flex flex-col gap-2xs">
+            <div className="flex flex-col gap-1">
               <p className="text-h3 font-display text-ink">
                 Locked until <span className="text-oxblood">{formatDate(lockState.locked_until)}</span>
               </p>
@@ -107,7 +106,7 @@ export default function Dashboard() {
             <p className="text-body text-ink-faint">No lock set.</p>
           )}
           {lockState && (
-            <div className="mt-lg">
+            <div className="mt-6">
               <LockControls lockState={lockState} />
             </div>
           )}
@@ -115,7 +114,7 @@ export default function Dashboard() {
 
         {/* Approved, counting down. */}
         {approved.length > 0 && lockState && (
-          <section className="border-t border-rule pt-xl pb-xl">
+          <section className="border-t border-rule pt-8 pb-8">
             <SectionLabel accent="sage">Approved — unblocking soon</SectionLabel>
             <ul className="flex flex-col">
               {approved.map(r => {
@@ -124,7 +123,7 @@ export default function Dashboard() {
                 return (
                   <li
                     key={r.id}
-                    className="flex items-baseline justify-between py-sm border-b border-rule last:border-0 gap-md"
+                    className="flex items-baseline justify-between py-3 border-b border-rule last:border-0 gap-4"
                   >
                     <span className="text-body font-mono text-ink truncate">
                       {entry?.domain ?? 'lock change'}
@@ -141,7 +140,7 @@ export default function Dashboard() {
 
         {/* Pending friend's call. */}
         {pending.length > 0 && (
-          <section className="border-t border-rule pt-xl pb-xl">
+          <section className="border-t border-rule pt-8 pb-8">
             <SectionLabel accent="amber">Pending friend approval</SectionLabel>
             {rqLoading ? (
               <p className="text-body text-ink-faint">Loading…</p>
@@ -152,9 +151,9 @@ export default function Dashboard() {
                   return (
                     <li
                       key={r.id}
-                      className="flex items-baseline justify-between py-sm border-b border-rule last:border-0 gap-md"
+                      className="flex items-baseline justify-between py-3 border-b border-rule last:border-0 gap-4"
                     >
-                      <div className="flex flex-col gap-2xs min-w-0">
+                      <div className="flex flex-col gap-1 min-w-0">
                         <span className="text-body font-mono text-ink truncate">
                           {entry?.domain ?? 'lock change'}
                         </span>
@@ -172,13 +171,13 @@ export default function Dashboard() {
         )}
 
         {/* Block a domain. */}
-        <section className="border-t border-rule pt-xl pb-xl">
+        <section className="border-t border-rule pt-8 pb-8">
           <SectionLabel>Block a domain</SectionLabel>
           <AddDomainForm />
         </section>
 
         {/* Blocklist. */}
-        <section className="border-t border-rule pt-xl">
+        <section className="border-t border-rule pt-8">
           <SectionLabel>Blocklist</SectionLabel>
           {blLoading ? (
             <p className="text-body text-ink-faint">Loading…</p>
@@ -191,12 +190,12 @@ export default function Dashboard() {
                 return (
                   <li
                     key={entry.id}
-                    className="flex items-center justify-between py-sm border-b border-rule last:border-0 gap-md"
+                    className="flex items-center justify-between py-3 border-b border-rule last:border-0 gap-4"
                   >
                     <span className="font-mono text-body text-ink flex-1 truncate">
                       {entry.domain}
                     </span>
-                    <div className="flex items-center gap-md shrink-0">
+                    <div className="flex items-center gap-4 shrink-0">
                       <StatusBadge status={entry.status} />
                       <span className="text-micro text-ink-faint hidden sm:inline">
                         {formatDate(entry.added_at)}
@@ -204,7 +203,7 @@ export default function Dashboard() {
                       {entry.status === 'active' && !hasRequest && (
                         <button
                           onClick={() => setRemovalTarget(entry)}
-                          className="text-small text-ink-muted hover:text-ink transition-colors border-b border-rule hover:border-ink pb-2xs"
+                          className="text-small text-ink-muted hover:text-ink transition-colors border-b border-rule hover:border-ink pb-1"
                         >
                           Request removal
                         </button>

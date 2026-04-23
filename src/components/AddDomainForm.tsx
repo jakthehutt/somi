@@ -45,19 +45,19 @@ export default function AddDomainForm() {
   const error = validationError ?? (mutation.error ? (mutation.error as Error).message : null)
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-xs">
-      <div className="flex gap-sm items-stretch">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <div className="flex gap-3 items-stretch">
         <input
           type="text"
           placeholder="reddit.com"
           value={input}
           onChange={e => { setInput(e.target.value); setValidationError(null) }}
-          className="flex-1 bg-transparent border-b border-rule focus:border-ink focus:outline-none py-xs text-body font-mono text-ink placeholder:text-ink-faint transition-colors"
+          className="flex-1 bg-transparent border-b border-rule focus:border-ink focus:outline-none py-2 text-body font-mono text-ink placeholder:text-ink-faint transition-colors"
         />
         <button
           type="submit"
           disabled={mutation.isPending || !input.trim()}
-          className="bg-oxblood text-paper hover:bg-oxblood-hover disabled:opacity-50 px-md text-small font-medium transition-colors"
+          className="bg-oxblood text-paper hover:bg-oxblood-hover disabled:opacity-50 px-4 text-small font-medium transition-colors"
         >
           {mutation.isPending ? 'Adding…' : 'Block'}
         </button>

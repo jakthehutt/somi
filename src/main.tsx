@@ -18,13 +18,13 @@ const queryClient = new QueryClient({
 
 function EnvError({ message }: { message: string }) {
   return (
-    <div className="min-h-screen bg-paper flex items-center justify-center p-lg">
-      <div className="max-w-lg bg-paper-raised border border-rule p-xl">
-        <h1 className="text-h2 font-display text-oxblood mb-sm">Configuration error</h1>
-        <p className="text-body text-ink mb-md">{message}</p>
+    <div className="min-h-screen bg-paper flex items-center justify-center p-6">
+      <div className="max-w-lg bg-paper-raised border border-rule p-8">
+        <h1 className="text-h2 font-display text-oxblood mb-3">Configuration error</h1>
+        <p className="text-body text-ink mb-4">{message}</p>
         <p className="text-small text-ink-muted">
           On Vercel: Settings → Environment Variables — add the missing{' '}
-          <code className="bg-paper-sunken px-xs py-2xs">VITE_*</code> keys, then redeploy.
+          <code className="bg-paper-sunken px-2 py-1">VITE_*</code> keys, then redeploy.
         </p>
       </div>
     </div>

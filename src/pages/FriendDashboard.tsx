@@ -4,6 +4,7 @@ import { useAuth }              from '../hooks/useAuth'
 import { useUnlockRequests }    from '../hooks/useUnlockRequests'
 import { useLockState }         from '../hooks/useLockState'
 import { useApproveRequest }    from '../hooks/useApproveRequest'
+import { Wordmark }             from '../components/Wordmark'
 import { formatCountdown, executionTime } from '../lib/countdown'
 import type { BlocklistEntry, Profile, UnlockRequest, LockState } from '../lib/types'
 
@@ -40,7 +41,7 @@ function SectionLabel({ children, accent }: { children: React.ReactNode; accent?
   const color = { ink: 'text-ink-muted', sage: 'text-sage', amber: 'text-amber' }[accent ?? 'ink']
   return (
     <h2
-      className={`${color} text-micro font-body font-semibold uppercase mb-md`}
+      className={`${color} text-micro font-body font-semibold uppercase mb-4`}
       style={{ letterSpacing: '0.12em' }}
     >
       {children}
@@ -59,46 +60,46 @@ function RequestCard({
   const approve = useApproveRequest()
   const pending = approve.isPending
   return (
-    <article className="py-lg border-b border-rule last:border-0">
-      <div className="flex items-start justify-between gap-lg mb-md">
+    <article className="py-6 border-b border-rule last:border-0">
+      <div className="flex items-start justify-between gap-6 mb-4">
         <div className="min-w-0">
           <p
-            className="text-micro text-ink-faint uppercase mb-xs"
+            className="text-micro text-ink-faint uppercase mb-2"
             style={{ letterSpacing: '0.12em' }}
           >
             Request to unblock
           </p>
           <p className="font-mono text-h3 text-ink truncate">{entry?.domain ?? 'lock change'}</p>
           {req.reason && (
-            <p className="text-body text-ink-muted italic mt-sm" style={{ maxWidth: '52ch' }}>
+            <p className="text-body text-ink-muted italic mt-3" style={{ maxWidth: '52ch' }}>
               &ldquo;{req.reason}&rdquo;
             </p>
           )}
         </div>
-        <time className="text-small text-ink-faint shrink-0 pt-2xs">
+        <time className="text-small text-ink-faint shrink-0 pt-1">
           {formatDate(req.requested_at)}
         </time>
       </div>
 
-      <div className="flex items-center justify-between gap-md flex-wrap">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <p className="text-small text-ink-muted">
           From <span className="text-ink font-mono">{requester?.email ?? 'unknown'}</span>
           {lockState && (
             <> &middot; if approved, unblocks after {lockState.cooling_off_hours}h</>
           )}
         </p>
-        <div className="flex gap-sm">
+        <div className="flex gap-3">
           <button
             onClick={() => approve.mutate({ requestId: req.id, approve: false })}
             disabled={pending}
-            className="text-small text-ink-muted hover:text-ink border border-rule hover:border-ink px-md py-xs disabled:opacity-50 transition-colors"
+            className="text-small text-ink-muted hover:text-ink border border-rule hover:border-ink px-4 py-2 disabled:opacity-50 transition-colors"
           >
             Deny
           </button>
           <button
             onClick={() => approve.mutate({ requestId: req.id, approve: true })}
             disabled={pending}
-            className="bg-oxblood text-paper hover:bg-oxblood-hover disabled:opacity-50 px-md py-xs text-small font-medium transition-colors"
+            className="bg-oxblood text-paper hover:bg-oxblood-hover disabled:opacity-50 px-4 py-2 text-small font-medium transition-colors"
           >
             {pending ? 'Saving…' : 'Approve'}
           </button>
@@ -127,19 +128,9 @@ export default function FriendDashboard() {
 
   return (
     <div className="min-h-screen bg-paper">
-      <header className="border-b border-rule px-lg py-md flex items-center justify-between">
-        <div className="flex items-baseline gap-sm">
-          <h1 className="text-h3 font-display text-ink" style={{ letterSpacing: '-0.015em' }}>
-            sovereign mind
-          </h1>
-          <span
-            className="text-micro text-ink-faint uppercase"
-            style={{ letterSpacing: '0.14em' }}
-          >
-            friend
-          </span>
-        </div>
-        <nav className="flex items-center gap-lg text-small text-ink-muted">
+      <header className="border-b border-rule px-6 py-4 flex items-center justify-between">
+        <Wordmark as="h1" suffix="friend" />
+        <nav className="flex items-center gap-6 text-small text-ink-muted">
           <span className="text-ink-faint">{profile?.email}</span>
           <button onClick={signOut} className="hover:text-ink transition-colors">
             Sign out
@@ -147,8 +138,8 @@ export default function FriendDashboard() {
         </nav>
       </header>
 
-      <main className="max-w-2xl mx-auto px-lg pt-2xl pb-3xl">
-        <section className="pb-xl">
+      <main className="max-w-2xl mx-auto px-6 pt-12 pb-16">
+        <section className="pb-8">
           <SectionLabel>
             Pending requests {pending.length > 0 && `(${pending.length})`}
           </SectionLabel>
@@ -172,7 +163,7 @@ export default function FriendDashboard() {
         </section>
 
         {awaitingExecution.length > 0 && lockState && (
-          <section className="border-t border-rule pt-xl pb-xl">
+          <section className="border-t border-rule pt-8 pb-8">
             <SectionLabel accent="sage">
               Approved — executing soon ({awaitingExecution.length})
             </SectionLabel>
@@ -183,7 +174,7 @@ export default function FriendDashboard() {
                 return (
                   <li
                     key={r.id}
-                    className="flex items-baseline justify-between py-sm border-b border-rule last:border-0 gap-md"
+                    className="flex items-baseline justify-between py-3 border-b border-rule last:border-0 gap-4"
                   >
                     <span className="font-mono text-body text-ink truncate">
                       {entry?.domain ?? 'lock change'}
@@ -199,7 +190,7 @@ export default function FriendDashboard() {
         )}
 
         {history.length > 0 && (
-          <section className="border-t border-rule pt-xl">
+          <section className="border-t border-rule pt-8">
             <SectionLabel>History</SectionLabel>
             {al ? (
               <p className="text-body text-ink-faint">Loading…</p>
@@ -216,12 +207,12 @@ export default function FriendDashboard() {
                   return (
                     <li
                       key={req.id}
-                      className="flex items-baseline justify-between py-sm border-b border-rule last:border-0 gap-md"
+                      className="flex items-baseline justify-between py-3 border-b border-rule last:border-0 gap-4"
                     >
                       <span className="font-mono text-body text-ink truncate">
                         {entry?.domain ?? 'lock change'}
                       </span>
-                      <div className="flex items-center gap-md shrink-0">
+                      <div className="flex items-center gap-4 shrink-0">
                         <span
                           className={`${statusColor} text-micro uppercase`}
                           style={{ letterSpacing: '0.1em' }}
